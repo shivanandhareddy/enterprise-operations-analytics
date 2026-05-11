@@ -1,0 +1,22 @@
+import pandas as pd
+
+df = pd.read_csv("data/DataCoSupplyChainDataset.csv", encoding="latin1")
+
+df.columns = (
+    df.columns
+    .str.lower()
+    .str.replace(" ", "_")
+    .str.replace("(", "")
+    .str.replace(")", "")
+)
+
+df["order_date_dateorders"] = pd.to_datetime(df["order_date_dateorders"], errors="coerce")
+df["shipping_date_dateorders"] = pd.to_datetime(df["shipping_date_dateorders"], errors="coerce")
+
+df["shipping_days"] = (
+    df["shipping_date_dateorders"] - df["order_date_dateorders"]
+).dt.days
+
+df = df.drop_duplicates()
+
+df.to_csv("data/clean_supply_chain.csv", index=False)
